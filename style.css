@@ -1,0 +1,152 @@
+/* こねこのさんぽ道 - Pixel Adventure */
+* { margin:0; padding:0; box-sizing:border-box; user-select:none; -webkit-tap-highlight-color:transparent; }
+body {
+  font-family:'Hiragino Sans','Meiryo',sans-serif;
+  background:#1a1a2e; display:flex; justify-content:center; align-items:center;
+  min-height:100vh; overflow:hidden; touch-action:none;
+}
+#gameContainer { position:relative; width:100%; max-width:800px; display:flex; flex-direction:column; align-items:center; }
+#gameCanvasWrapper {
+  position:relative; width:100%; aspect-ratio:800/400; overflow:hidden;
+  border:4px solid #0f0f23; border-radius:12px 12px 0 0; background:#74b9ff;
+  box-shadow: 0 0 30px rgba(0,0,0,0.5);
+}
+#gameCanvas { display:block; width:100%; height:100%; image-rendering:pixelated; }
+#uiOverlay { position:absolute; top:12px; left:12px; pointer-events:none; z-index:10; }
+.status-group {
+  background:rgba(0,0,0,0.65); padding:10px 14px; border-radius:10px;
+  color:white; border:2px solid rgba(255,255,255,0.3); backdrop-filter:blur(4px);
+}
+.barLabel { font-size:10px; margin-bottom:2px; letter-spacing:1.5px; color:#aaa; }
+.barContainer { background:#222; height:10px; width:120px; border-radius:5px; margin-bottom:6px; overflow:hidden; }
+.barFill { height:100%; transition:width 0.15s ease-out; border-radius:5px; }
+.hpBar { background:linear-gradient(90deg,#ff4757,#ff6b81); }
+.staminaBar { background:linear-gradient(90deg,#2ed573,#7bed9f); }
+.stageLabel { font-size:11px; color:#ffd700; font-weight:bold; margin-top:2px; }
+
+#bossBarContainer {
+  position:absolute; top:12px; left:50%; transform:translateX(-50%);
+  display:none; background:rgba(0,0,0,0.8); padding:8px 16px; border-radius:10px;
+  border:2px solid #ff4757; text-align:center; z-index:10;
+}
+#bossBarContainer .barContainer { width:180px; margin:0 auto; }
+
+/* ============================================================
+   コントロールパネル
+   ============================================================ */
+#controlPanel {
+  width:100%; height:150px; background:linear-gradient(180deg,#2c3e50,#1a1a2e);
+  display:flex; justify-content:space-between; align-items:center;
+  padding:0 30px; border-radius:0 0 12px 12px;
+  border:4px solid #0f0f23; border-top:2px solid #34495e;
+}
+#joystickArea {
+  width:110px; height:110px; background:radial-gradient(circle,#3a4a5e,#2c3e50);
+  border:3px solid #5a6a7e; border-radius:50%; position:relative; flex-shrink:0;
+}
+#joystickHandle {
+  width:46px; height:46px; background:radial-gradient(circle at 35% 35%,#fff,#ccc);
+  border-radius:50%; position:absolute; box-shadow:0 3px 0 #999, inset 0 1px 2px rgba(255,255,255,0.5);
+  pointer-events:none;
+}
+
+/* 右コントロール：ダッシュ＋発声を縦並びで右端にまとめ */
+#rightControls {
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+}
+#dashBtn {
+  width:80px; height:36px; background:linear-gradient(135deg,#3498db,#2980b9);
+  border:2px solid rgba(255,255,255,0.5); border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:bold; color:#fff; cursor:pointer;
+  transition: transform 0.05s, box-shadow 0.05s;
+}
+#dashBtn:active { transform: scale(0.95); }
+#actionBtn {
+  width:86px; height:86px; background:linear-gradient(135deg,#ff4757,#c0392b);
+  border:3px solid #fff; border-radius:50%; display:flex; align-items:center;
+  justify-content:center; font-size:14px; font-weight:bold; color:#fff;
+  cursor:pointer; box-shadow:0 5px 0 #8b1a1a; flex-shrink:0;
+  transition: transform 0.05s, box-shadow 0.05s;
+}
+#actionBtn:active { transform:translateY(3px); box-shadow:0 2px 0 #8b1a1a; }
+
+/* ============================================================
+   ステージ情報
+   ============================================================ */
+#stageInfo {
+  position:absolute; top:38%; left:50%; transform:translate(-50%,-50%);
+  font-size:26px; font-weight:bold; color:#ffd700; background:rgba(0,0,0,0.85);
+  padding:12px 40px; border:3px solid #ffd700; border-radius:10px;
+  opacity:0; transition:opacity 0.08s; pointer-events:none; z-index:20;
+  text-shadow:0 0 10px #ffd700;
+}
+
+/* ============================================================
+   ゲームオーバー
+   ============================================================ */
+#gameOver {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  background:rgba(0,0,0,0.9); padding:28px 40px; border:3px solid #ffd700;
+  border-radius:14px; text-align:center; display:none; z-index:100; color:#fff;
+  min-width:240px;
+}
+#gameOver h2 { font-size:28px; margin-bottom:6px; color:#ffd700; }
+#gameOver p { font-size:14px; color:#aaa; margin-bottom:12px; }
+#scoreDisplay {
+  background:rgba(255,255,255,0.08); border-radius:8px;
+  padding:10px 16px; margin-bottom:14px; font-size:13px; line-height:1.9;
+  border:1px solid rgba(255,215,0,0.3);
+}
+#scoreDisplay .score-row { display:flex; justify-content:space-between; gap:24px; }
+#scoreDisplay .score-label { color:#aaa; }
+#scoreDisplay .score-val   { color:#ffd700; font-weight:bold; }
+.btn-restart {
+  padding:12px 30px; background:#ffd700; color:#000; border:none;
+  font-weight:bold; font-size:14px; border-radius:8px; cursor:pointer;
+}
+.btn-restart:hover { background:#ffed4a; }
+
+/* ============================================================
+   タイトル画面
+   ============================================================ */
+#titleScreen {
+  position:absolute; inset:0;
+  background:linear-gradient(160deg,#1a1a3e 0%,#2c1a4a 40%,#1a3a4e 100%);
+  display:flex; align-items:center; justify-content:center;
+  z-index:200; cursor:pointer;
+  animation: titleFadeIn 0.6s ease-out;
+}
+#titleScreen.hiding {
+  animation: titleFadeOut 0.4s ease-in forwards;
+  pointer-events:none;
+}
+@keyframes titleFadeIn  { from { opacity:0; } to { opacity:1; } }
+@keyframes titleFadeOut { from { opacity:1; } to { opacity:0; } }
+
+.title-inner { text-align:center; color:#fff; padding:20px; }
+.title-cat   { font-size:52px; line-height:1; margin-bottom:8px; animation: catBounce 1.2s ease-in-out infinite alternate; }
+@keyframes catBounce { from { transform:translateY(0); } to { transform:translateY(-8px); } }
+
+.title-main {
+  font-size:28px; font-weight:bold; color:#ffd700;
+  text-shadow:0 0 18px rgba(255,215,0,0.7); letter-spacing:3px; margin-bottom:4px;
+}
+.title-sub { font-size:12px; color:#aaa; letter-spacing:4px; margin-bottom:18px; }
+
+.title-controls {
+  display:inline-flex; flex-direction:column; gap:5px;
+  background:rgba(255,255,255,0.07); border-radius:10px;
+  padding:12px 20px; margin-bottom:18px; text-align:left;
+}
+.ctrl-row { display:flex; align-items:center; gap:12px; font-size:12px; color:#ccc; }
+.ctrl-key {
+  background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3);
+  border-radius:5px; padding:2px 8px; font-size:11px; color:#fff;
+  min-width:60px; text-align:center; letter-spacing:1px;
+}
+.title-prompt {
+  font-size:13px; color:#ffd700; letter-spacing:2px;
+  animation: blink 1.1s ease-in-out infinite alternate;
+}
+@keyframes blink { from { opacity:0.4; } to { opacity:1; } }

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>こねこのさんぽ道 - Pixel Adventure</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="gameContainer">
+  <div id="gameCanvasWrapper">
+    <canvas id="gameCanvas"></canvas>
+    <div id="uiOverlay">
+      <div class="status-group">
+        <span class="barLabel">HP</span>
+        <div class="barContainer"><div class="barFill hpBar" id="hpBar"></div></div>
+        <span class="barLabel">ENERGY</span>
+        <div class="barContainer"><div class="barFill staminaBar" id="staminaBar"></div></div>
+        <div class="stageLabel">STAGE <span id="stageNum">1</span></div>
+      </div>
+    </div>
+    <div id="bossBarContainer">
+      <div style="font-size:11px;color:#ff6b81;font-weight:bold;margin-bottom:4px;letter-spacing:1px;">◆ BIG DOG ◆</div>
+      <div class="barContainer"><div class="barFill hpBar" id="bossHpBar"></div></div>
+    </div>
+    <div id="stageInfo"></div>
+
+    <!-- タイトル画面 -->
+    <div id="titleScreen">
+      <div class="title-inner">
+        <div class="title-cat">🐱</div>
+        <h1 class="title-main">こねこのさんぽ道</h1>
+        <p class="title-sub">Pixel Adventure</p>
+        <div class="title-controls">
+          <div class="ctrl-row"><span class="ctrl-key">←→</span><span>移動</span></div>
+          <div class="ctrl-row"><span class="ctrl-key">↑</span><span>ジャンプ</span></div>
+          <div class="ctrl-row"><span class="ctrl-key">Space / Z</span><span>発声攻撃</span></div>
+          <div class="ctrl-row"><span class="ctrl-key">X / Shift</span><span>ダッシュ</span></div>
+        </div>
+        <div class="title-prompt">タップ / 任意キー でスタート</div>
+      </div>
+    </div>
+
+    <!-- ゲームオーバー画面 -->
+    <div id="gameOver">
+      <h2 id="resultText"></h2>
+      <p id="resultSub"></p>
+      <div id="scoreDisplay"></div>
+      <button class="btn-restart" onclick="restartGame()">RETRY</button>
+    </div>
+  </div>
+
+  <div id="controlPanel">
+    <div id="joystickArea"><div id="joystickHandle"></div></div>
+    <div id="rightControls">
+      <div id="dashBtn">ダッシュ</div>
+      <div id="actionBtn">発声！</div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
