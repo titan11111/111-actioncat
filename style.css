@@ -12,17 +12,19 @@ body {
   box-shadow: 0 0 30px rgba(0,0,0,0.5);
 }
 #gameCanvas { display:block; width:100%; height:100%; image-rendering:pixelated; }
-#uiOverlay { position:absolute; top:12px; left:12px; pointer-events:none; z-index:10; }
+#uiOverlay { position:absolute; top:8px; left:8px; pointer-events:none; z-index:10; }
 .status-group {
-  background:rgba(0,0,0,0.65); padding:10px 14px; border-radius:10px;
-  color:white; border:2px solid rgba(255,255,255,0.3); backdrop-filter:blur(4px);
+  background:rgba(0,0,0,0.55); padding:4px 7px; border-radius:6px;
+  color:white; border:1px solid rgba(255,255,255,0.2); backdrop-filter:blur(2px);
+  opacity:0.8;
 }
-.barLabel { font-size:10px; margin-bottom:2px; letter-spacing:1.5px; color:#aaa; }
-.barContainer { background:#222; height:10px; width:120px; border-radius:5px; margin-bottom:6px; overflow:hidden; }
-.barFill { height:100%; transition:width 0.15s ease-out; border-radius:5px; }
+.mini-row { display:flex; align-items:center; gap:4px; margin-bottom:3px; }
+.barLabel { font-size:8px; letter-spacing:1px; color:#aaa; width:14px; flex-shrink:0; }
+.barContainer { background:#222; height:5px; width:60px; border-radius:3px; overflow:hidden; }
+.barFill { height:100%; transition:width 0.15s ease-out; border-radius:3px; }
 .hpBar { background:linear-gradient(90deg,#ff4757,#ff6b81); }
 .staminaBar { background:linear-gradient(90deg,#2ed573,#7bed9f); }
-.stageLabel { font-size:11px; color:#ffd700; font-weight:bold; margin-top:2px; }
+.stageLabel { font-size:9px; color:#ffd700; font-weight:bold; margin-top:1px; }
 
 #bossBarContainer {
   position:absolute; top:12px; left:50%; transform:translateX(-50%);
